@@ -1,101 +1,15 @@
-
-#---- TESTING CODE for simple 4x4 Gridworld with goal states in upper/left and lower/right corner ----
-next_state = {}
-next_state[(0, "l")] = 0
-next_state[(0, "u")] = 0
-next_state[(0, "r")] = 0
-next_state[(0, "d")] = 0
-
-next_state[(1, "l")] = 0
-next_state[(1, "u")] = 1
-next_state[(1, "r")] = 2
-next_state[(1, "d")] = 5
-
-next_state[(2, "l")] = 1
-next_state[(2, "u")] = 2
-next_state[(2, "r")] = 3
-next_state[(2, "d")] = 6
-
-next_state[(3, "l")] = 2
-next_state[(3, "u")] = 3
-next_state[(3, "r")] = 3
-next_state[(3, "d")] = 7
-
-next_state[(4, "l")] = 4
-next_state[(4, "u")] = 0
-next_state[(4, "r")] = 5
-next_state[(4, "d")] = 8
-
-next_state[(5, "l")] = 4
-next_state[(5, "u")] = 1
-next_state[(5, "r")] = 6
-next_state[(5, "d")] = 9
-
-next_state[(6, "l")] = 5
-next_state[(6, "u")] = 2
-next_state[(6, "r")] = 7
-next_state[(6, "d")] = 10
-
-next_state[(7, "l")] = 6
-next_state[(7, "u")] = 3
-next_state[(7, "r")] = 7
-next_state[(7, "d")] = 11
-
-next_state[(8, "l")] = 8
-next_state[(8, "u")] = 4
-next_state[(8, "r")] = 9
-next_state[(8, "d")] = 12
-
-next_state[(9, "l")] = 8
-next_state[(9, "u")] = 5
-next_state[(9, "r")] = 10
-next_state[(9, "d")] = 13
-
-next_state[(10, "l")] = 9
-next_state[(10, "u")] = 6
-next_state[(10, "r")] = 11
-next_state[(10, "d")] = 14
-
-next_state[(11, "l")] = 10
-next_state[(11, "u")] = 7
-next_state[(11, "r")] = 11
-next_state[(11, "d")] = 0
-
-next_state[(12, "l")] = 12
-next_state[(12, "u")] = 8
-next_state[(12, "r")] = 13
-next_state[(12, "d")] = 12
-
-next_state[(13, "l")] = 12
-next_state[(13, "u")] = 9
-next_state[(13, "r")] = 14
-next_state[(13, "d")] = 13
-
-next_state[(14, "l")] = 13
-next_state[(14, "u")] = 10
-next_state[(14, "r")] = 0
-next_state[(14, "d")] = 14
-
-def get_available_actions(state):
-    actions = ['l', 'u', 'r', 'd']
-    return actions
-
-def get_equiprobable_policy_actions(state):
-    tuples = [('l', .25), ('u', .25), ('r', .25), ('d', .25)]
-    return tuples
-
-def get_transitions(state, action):
-    next_state_num = next_state[(state, action)]
-    reward = 0 if state == 0 else -1
-    prob = 1
-    tuple = (next_state_num, reward, prob)
-    return [tuple]
+# test_dp.py - a set of functions for testing Dynamic Programming algorithms
+import gridworld_mdp as gw 
 
 def error(msg):
     print("ERROR: " + msg)
 
 def passed(msg):
     print("passed test: " + msg)
+
+def get_equiprobable_policy_actions(state):
+    tuples = [("up", .25), ("down", .25), ("left", .25), ("right", .25)]
+    return tuples
 
 def find_rounded_diffs(v, vexpect):
     diffs = 0
@@ -138,11 +52,11 @@ def policy_eval_core_test(eval_func, variant):
     vexpect = [0, -14, -20, -22, -14, -18, -20, -20, -20, -20, -18, -14, -22, -20, -14]
     
     state_count = len(vexpect)
-    actions=['l', 'r', 'u', 'd']
+    #actions=["left", "right", "up", "down"]
     gamma = 1
     theta=.0001
 
-    v = eval_func(state_count, gamma, theta, get_equiprobable_policy_actions, get_transitions)
+    v = eval_func(state_count, gamma, theta, get_equiprobable_policy_actions, gw.get_transitions)
 
     # 1. check type of result
     if (not isinstance(v, list)):
@@ -183,17 +97,17 @@ def policy_iteration_core_test(eval_func, name, passcode_index):
 
     # piexpect is the optimal policy for our Gridworld (tuples represnt ties / equal actions)
     piexpect = [
-        ('l', 'u', 'r','d'), 'l', 'l', ('l', 'd'),     # first row (states 0-3)
-        'u', ('l', 'u'), ('l', 'u', 'r', 'd'), 'd',    # second row (states 4-7)
-        'u', ('l', 'u', 'r', 'd'), ('d', 'r'), 'd',    # third row (states 8-11)
-        ('u', 'r'), 'r', 'r']                          # forth row (states 12-14)
+        ("left", "up", "right","down"), "left", "left", ("left", "down"),     # first row (states 0-3)
+        "up", ("left", "up"), ("left", "up", "right", "down"), "down",    # second row (states 4-7)
+        "up", ("left", "up", "right", "down"), ("down", "right"), "down",    # third row (states 8-11)
+        ("up", "right"), "right", "right"]                          # forth row (states 12-14)
 
     state_count = len(vexpect)
-    actions=['l', 'r', 'u', 'd']
+    actions=["left", "right", "up", "down"]
     gamma = .999
     theta=.0001
 
-    result = eval_func(state_count, gamma, theta, get_available_actions, get_transitions)
+    result = eval_func(state_count, gamma, theta, gw.get_available_actions, gw.get_transitions)
 
     # 1. check type of result
     if (not isinstance(result, tuple)):
